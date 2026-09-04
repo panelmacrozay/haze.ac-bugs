@@ -360,6 +360,183 @@
     .grid { grid-template-columns: 1fr; padding: 0 16px 60px; }
     h1 { font-size: 34px; }
   }
+
+  /* ── MODAL BACKDROP ── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(5,4,10,0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ── MODAL BOX ── */
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 36px 32px 30px;
+    width: 100%;
+    max-width: 480px;
+    position: relative;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.05) inset,
+      0 -1px 0 rgba(0,0,0,0.6) inset,
+      0 32px 80px rgba(0,0,0,0.7),
+      0 0 40px rgba(123,47,255,0.12);
+    transform: translateY(16px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .modal-backdrop.open .modal {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    background: rgba(123,47,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    transition: background 0.15s, color 0.15s;
+    line-height: 1;
+  }
+
+  .modal-close:hover { background: rgba(123,47,255,0.18); color: #fff; }
+
+  .modal-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--purple-2);
+    margin-bottom: 8px;
+  }
+
+  .modal-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.4px;
+    margin-bottom: 6px;
+  }
+
+  .modal-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+
+  /* ── FORM FIELDS ── */
+  .field { margin-bottom: 16px; }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 7px;
+    letter-spacing: 0.1px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid rgba(123,47,255,0.2);
+    border-radius: 9px;
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.18s, box-shadow 0.18s;
+    resize: none;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--purple-2);
+    box-shadow: 0 0 0 3px rgba(168,85,247,0.12);
+  }
+
+  .field select option { background: var(--bg2); }
+
+  .field textarea { min-height: 110px; line-height: 1.55; }
+
+  /* ── SUBMIT BTN ── */
+  .modal-submit {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple-1), var(--purple-2));
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.1px;
+    transition: opacity 0.18s, transform 0.15s;
+  }
+
+  .modal-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+  .modal-submit:active { transform: translateY(0); }
+
+  /* ── SUCCESS STATE ── */
+  .modal-success {
+    text-align: center;
+    padding: 20px 0 10px;
+    display: none;
+  }
+
+  .modal-success.show { display: block; }
+  .modal-form.hide { display: none; }
+
+  .success-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: rgba(34,211,160,0.12);
+    border: 1px solid rgba(34,211,160,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+  }
+
+  .success-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .success-sub {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
@@ -506,6 +683,125 @@
 </div>
 
 <footer>Haze.AC · internal bug tracker · build unstable</footer>
+
+<!-- ── REPORT A BUG MODAL ── -->
+<div class="modal-backdrop" id="bugModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bugModal')">✕</button>
+
+    <div class="modal-form" id="bugForm">
+      <div class="modal-eyebrow">// submit report</div>
+      <div class="modal-title">Report a Bug</div>
+      <div class="modal-sub">Found something broken? Fill this out and we'll log it.</div>
+
+      <div class="field">
+        <label>Bug Title</label>
+        <input type="text" placeholder="e.g. ESP freezes after 5 min" id="bugTitle" />
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="bugCategory">
+          <option value="">— Select category —</option>
+          <option>Aimbot</option>
+          <option>ESP</option>
+          <option>Overlay</option>
+          <option>FPS Changer</option>
+          <option>Driver / BSOD</option>
+          <option>Silent Aim</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea placeholder="Describe what happened, when it happens, and any steps to reproduce..." id="bugDesc"></textarea>
+      </div>
+      <button class="modal-submit" onclick="submitForm('bugForm', 'bugSuccess')">Submit Report</button>
+    </div>
+
+    <div class="modal-success" id="bugSuccess">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Report Received</div>
+      <div class="success-sub">Your bug report has been logged. We'll investigate and push a fix as soon as possible.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTACT ADMIN MODAL ── -->
+<div class="modal-backdrop" id="adminModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+
+    <div class="modal-form" id="adminForm">
+      <div class="modal-eyebrow">// admin channel</div>
+      <div class="modal-title">Contact Administrator</div>
+      <div class="modal-sub">Submit a report directly to the admin team. Use this for urgent issues, bans, or anything not covered by the bug tracker.</div>
+
+      <div class="field">
+        <label>Your Username</label>
+        <input type="text" placeholder="Haze.AC username" id="adminUser" />
+      </div>
+      <div class="field">
+        <label>Subject</label>
+        <input type="text" placeholder="e.g. False ban appeal, billing issue..." id="adminSubject" />
+      </div>
+      <div class="field">
+        <label>Message</label>
+        <textarea placeholder="Be as detailed as possible. Include any relevant info — timestamps, screenshots, error codes..." id="adminMsg"></textarea>
+      </div>
+      <button class="modal-submit" onclick="submitForm('adminForm', 'adminSuccess')">Send to Admin</button>
+    </div>
+
+    <div class="modal-success" id="adminSuccess">
+      <div class="success-icon">✓</div>
+      <div class="success-title">Message Sent</div>
+      <div class="success-sub">Your report has been forwarded to the admin team. Expect a response within 24–48 hours.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // wire up nav buttons
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    const label = btn.textContent.trim();
+    if (label.includes('Report')) btn.onclick = (e) => { e.preventDefault(); openModal('bugModal'); };
+    if (label.includes('Contact')) btn.onclick = (e) => { e.preventDefault(); openModal('adminModal'); };
+    if (label.includes('Login')) btn.onclick = (e) => { e.preventDefault(); /* placeholder */ };
+  });
+
+  function openModal(id) {
+    document.getElementById(id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // close on backdrop click
+  document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+    backdrop.addEventListener('click', e => {
+      if (e.target === backdrop) closeModal(backdrop.id);
+    });
+  });
+
+  // close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(m => closeModal(m.id));
+  });
+
+  function submitForm(formId, successId) {
+    const form = document.getElementById(formId);
+    const success = document.getElementById(successId);
+    form.classList.add('hide');
+    success.classList.add('show');
+    // reset after close
+    setTimeout(() => {
+      form.classList.remove('hide');
+      success.classList.remove('show');
+    }, 3000);
+  }
+</script>
 
 </body>
 </html>
